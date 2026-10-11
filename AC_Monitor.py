@@ -3,13 +3,13 @@ import time
 import requests
 
 # ==========================================
-# 설정 영역
+# Configuration
 # ==========================================
 DISCORD_WEBHOOK_URL = "YOUR_WEBHOOK_URL_HERE"
-CHECK_INTERVAL = 1  # 1초 간격 모니터링
+CHECK_INTERVAL = 1  # 1-second interval monitoring
 
 # ==========================================
-# Windows API 구조체 선언
+# Windows API Structure
 # ==========================================
 class SYSTEM_POWER_STATUS(ctypes.Structure):
     _fields_ = [
@@ -23,25 +23,25 @@ class SYSTEM_POWER_STATUS(ctypes.Structure):
 
 def send_discord_alert(message):
     try:
-        # @everyone 멘션 포함
+        # Include @everyone mention
         payload = {"content": f"@everyone\n{message}"}
         requests.post(DISCORD_WEBHOOK_URL, json=payload, timeout=5)
-        print(f"[-] 발송 완료: {message}")
+        print(f"[-] Alert sent: {message}")
     except Exception as e:
-        print(f"[!] 발송 실패: {e}")
+        print(f"[!] Alert failed: {e}")
 
 def is_ac_connected():
     try:
         status = SYSTEM_POWER_STATUS()
         ctypes.windll.kernel32.GetSystemPowerStatus(ctypes.byref(status))
-        # 1 = AC 전원 연결됨, 0 = 배터리
+        # 1 = AC power connected, 0 = Battery
         return status.ACLineStatus == 1
     except Exception:
         return True
 
 def main():
     print("==================================================")
-    print(" AC 전원 단절 모니터링 시작 (종료: Ctrl + C)")
+    print(" AC Power Monitor Started (Press Ctrl+C to stop)")
     print("==================================================")
     
     ac_was_connected = is_ac_connected()
@@ -51,23 +51,23 @@ def main():
             time.sleep(CHECK_INTERVAL)
             current_ac = is_ac_connected()
             
-            # AC 전원 끊김 감지
+            # AC power loss detected
             if ac_was_connected and not current_ac:
-                msg = "⚡ **경고**: AC 전원이 차단되었습니다!"
-                print(f"\n[!] 상태 변경: {msg}")
+                msg = "⚡ **WARNING**: AC power disconnected!"
+                print(f"\n[!] Status Change: {msg}")
                 send_discord_alert(msg)
                 
-            # AC 전원 복구 감지
+            # AC power restored
             elif not ac_was_connected and current_ac:
-                msg = "✅ **복구**: AC 전원이 정상화되었습니다."
-                print(f"\n[*] 상태 변경: {msg}")
+                msg = "✅ **RESTORED**: AC power reconnected."
+                print(f"\n[*] Status Change: {msg}")
                 send_discord_alert(msg)
             
             ac_was_connected = current_ac
 
     except KeyboardInterrupt:
         print("\n==================================================")
-        print(" 프로세스가 종료되었습니다.")
+        print(" Process terminated.")
         print("==================================================")
 
 if __name__ == "__main__":
