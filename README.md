@@ -1,6 +1,6 @@
 # AC Monitor
 
-## Project Overview
+## Script Overview
 
 A lightweight Python utility that monitors the AC power status of a Windows laptop using the Windows API (`GetSystemPowerStatus`). It instantly triggers a Discord webhook alert the moment the power cable is disconnected.
 
