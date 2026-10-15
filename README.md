@@ -3,7 +3,7 @@
 ## Overview
 A lightweight Windows utility that watches AC power status via the Windows API (`GetSystemPowerStatus`) and fires a Discord webhook alert when the power cable is disconnected.
 
-Tested on Windows 10 (1909). Windows 11 and other operating systems are untested.
+Tested on Windows 10 (1909).
 
 ## Use Case: Anti-Theft Alarm
 Designed for short absences from a laptop in public spaces. A thief must unplug the AC adapter to take the machine — this script detects that state change and pushes an alert to your phone via Discord, giving you a chance to react.
